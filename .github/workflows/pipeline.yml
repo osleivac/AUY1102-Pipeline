@@ -49,7 +49,7 @@ jobs:
   sonar:
     needs: build-test
     runs-on: ubuntu-latest
-    continue-on-error: true
+    #continue-on-error: true
     
     steps:
       - name: Checkout código
