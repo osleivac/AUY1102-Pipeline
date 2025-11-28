@@ -1,0 +1,12 @@
+code .dockerignore
+```
+
+Contenido:
+```
+node_modules
+npm-debug.log
+.git
+.github
+.gitignore
+README.md
+.env
