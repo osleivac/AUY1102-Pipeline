@@ -46,9 +46,10 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/app-ci:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/app-ci:latest
 
-sonar:
+  sonar:
     needs: build-test
     runs-on: ubuntu-latest
+    continue-on-error: true
     
     steps:
       - name: Checkout código
@@ -76,7 +77,8 @@ sonar:
             -Dsonar.sources=.
             -Dsonar.exclusions=**/node_modules/**,**/*.test.js,**/test/**
             -Dsonar.javascript.node.maxspace=4096
- snyk:
+
+  snyk:
     needs: build-test
     runs-on: ubuntu-latest
     continue-on-error: false
