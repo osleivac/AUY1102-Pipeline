@@ -42,7 +42,7 @@ jobs:
         with:
           args: >
             -Dsonar.organization=osleivac
-            -Dsonar.projectKey=osleivac
+            -Dsonar.projectKey=osleivac_AUY1102-Pipeline
 
   docker-build-push:
     needs: qa-security-check
