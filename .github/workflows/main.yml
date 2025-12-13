@@ -1,0 +1,65 @@
+name: Pipeline EFT Completo
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  qa-security-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Instalar Dependencias
+        run: npm install
+
+      # FASE 1: Pruebas BDD (Cucumber)
+      - name: Ejecutar Pruebas BDD (Cucumber)
+        run: npx cucumber-js
+
+      # FASE 2: Análisis de Seguridad (Snyk)
+      - name: Snyk Security Scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
+
+      # FASE 2: Análisis de Calidad (SonarCloud)
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=TU_ORG_AQUI
+            -Dsonar.projectKey=TU_PROJECT_KEY_AQUI
+
+  docker-build-push:
+    needs: qa-security-check
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login en Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Construir y Subir Imagen
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/eft-final:latest
