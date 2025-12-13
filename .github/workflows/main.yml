@@ -41,8 +41,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.organization=TU_ORG_AQUI
-            -Dsonar.projectKey=TU_PROJECT_KEY_AQUI
+            -Dsonar.organization=osleivac
+            -Dsonar.projectKey=osleivac
 
   docker-build-push:
     needs: qa-security-check
